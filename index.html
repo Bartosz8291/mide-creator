@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIDI Song Creator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+  }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+
+  .title {
+    text-align: center;
+    color: #333;
+  }
+
+  .upload-section {
+    margin-bottom: 20px;
+  }
+
+  .upload-label {
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  .file-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  .controls {
+    text-align: center;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .play-btn {
+    background-color: #4caf50;
+    color: #fff;
+  }
+
+  .stop-btn {
+    background-color: #f44336;
+    color: #fff;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1 class="title">MIDI Song Creator</h1>
+  <canvas id="midiCanvas" width="600" height="200"></canvas>
+  <div class="controls">
+    <button onclick="generateMidi()" class="btn">Generate MIDI</button>
+    <a id="downloadLink" style="display: none;"></a>
+  </div>
+</div>
+
+<script src="midi-writer.js"></script>
+<script>
+  function generateMidi() {
+    const track = new MidiWriter.Track();
+    track.addEvent(new MidiWriter.ProgramChangeEvent({ instrument: 1 }));
+    const noteEvents = [
+      { pitch: 'C4', duration: '4' },
+      { pitch: 'D4', duration: '4' },
+      { pitch: 'E4', duration: '4' },
+      { pitch: 'F4', duration: '4' },
+      { pitch: 'G4', duration: '4' },
+      { pitch: 'A4', duration: '4' },
+      { pitch: 'B4', duration: '4' },
+      { pitch: 'C5', duration: '4' }
+    ];
+    noteEvents.forEach(event => {
+      track.addEvent(new MidiWriter.NoteEvent(event));
+    });
+    const write = new MidiWriter.Writer([track]);
+    const fileContent = write.buildFile();
+    const blob = new Blob([fileContent], { type: 'audio/midi' });
+    const url = URL.createObjectURL(blob);
+    const downloadLink = document.getElementById('downloadLink');
+    downloadLink.href = url;
+    downloadLink.download = 'midi-song.mid';
+    downloadLink.click();
+  }
+</script>
+</body>
+</html>
